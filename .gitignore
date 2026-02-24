@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# R
+.Rhistory
+.RData
+.Rapp.history
+.Rproj.user/
+
+# renv (if ever added to this package)
+renv/library/
