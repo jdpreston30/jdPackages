@@ -1,0 +1,60 @@
+# Analysis Configuration — Dynamic Computer Detection
+# Project: {{PROJECT_NAME}}
+# Edit the path values below to match your computer-specific data locations.
+# The "computer" field is auto-detected from the home directory;
+# add a new entry under "computers:" if you work on additional machines.
+
+# ── Computer-specific path templates ─────────────────────────────────────────
+computers:
+  laptop:
+    user_home: "/Users/jdp2019"
+    onedrive_path: "Library/CloudStorage/OneDrive-Emory"
+    figures_path: "Outputs/Figures/Final"
+
+  desktop:
+    user_home: "/Users/JoshsMacbook2015"
+    onedrive_path: "Library/CloudStorage/OneDrive-EmoryUniversity"
+    figures_path: "Outputs/Figures/Final"
+
+# ── Dynamic path templates ────────────────────────────────────────────────────
+# {user_home} and {onedrive_path} are substituted at runtime by load_dynamic_config()
+paths:
+  # Base data path (raw MS data lives in OneDrive)
+  base_data_path: "{user_home}/{onedrive_path}/Research/[ENTER_PROJECT_DATA_PATH]"
+
+  # Metadata files (adjust names as needed)
+  clinical_metadata: "{base_data_path}/metadata_files/manifest.xlsx"
+  primary_data:      "{base_data_path}/metadata_files/primary_data.xlsx"
+
+  # Output paths (relative to project root — fast local I/O)
+  output:     "./Outputs"
+  figures:    "{figures_path}"
+  tables:     "Outputs/Tables"
+  validation: "Outputs/Validation"
+
+  # OneDrive output sync location (for final figures)
+  figures_onedrive: "{user_home}/{onedrive_path}/Research/[ENTER_PROJECT_DATA_PATH]/Figures"
+
+  # Script and utility paths (do not change)
+  scripts: "R/Scripts/"
+  utils:   "R/Utilities/"
+
+# ── Analysis settings ─────────────────────────────────────────────────────────
+analysis:
+  project_name: "{{PROJECT_NAME}}"
+  description:  "[ENTER PROJECT DESCRIPTION]"
+
+  # Script execution flags — set to false to skip heavy steps during development
+  run_validation_step: false
+
+  # Tibble display options
+  tibble_options:
+    print_max: 100
+    print_min: 100
+    sigfig: 7
+
+  # data.table display options
+  datatable_options:
+    print_class: true
+    print_keys:  true
+    aware:       true

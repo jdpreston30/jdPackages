@@ -1,0 +1,22 @@
+Type: Project
+Title: {{PROJECT_NAME}}
+Authors@R: person("Joshua", "Preston", email = "joshua.preston@emory.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9834-3017"))
+Description: [ENTER PROJECT DESCRIPTION HERE]
+URL: https://github.com/{{GITHUB_USER}}/{{PROJECT_NAME}}
+Depends:
+    R (>= 4.5.0)
+Imports:
+    dplyr,
+    tidyr,
+    tibble,
+    readr,
+    purrr,
+    ggplot2,
+    here,
+    yaml,
+    TernTablesR
+Remotes:
+    {{GITHUB_USER}}/TernTablesR
+SystemRequirements:
+    TinyTeX (LaTeX distribution) - automatically installed via tinytex::install_tinytex() if not present
+Encoding: UTF-8

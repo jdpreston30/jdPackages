@@ -1,0 +1,10 @@
+# .renvignore
+# Files and directories listed here are excluded from renv dependency scanning.
+# renv will not crawl these paths when discovering package dependencies.
+
+# Ignore output and temp directories
+Outputs/
+renv/
+
+# Ignore scratch / ad-hoc scripts not part of the reproducible pipeline
+R/Utilities/Other/

@@ -1,0 +1,85 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# R
+.Rhistory
+.RData
+.Rapp.history
+*_cache/
+/cache
+*.utf8.md
+*.knit.md
+.Renviron
+
+# RStudio
+.Rproj.user/
+*.Rproj
+
+# renv — library is local, only lock file is tracked
+renv/library/
+renv/python/
+renv/staging/
+
+# Data files — raw/large data not committed (lives in OneDrive)
+*.csv
+*.xlsx
+*.xls
+*.tsv
+*.rds
+*.RData
+*.qs
+*.mzML
+*.raw
+*.mzXML
+
+# Outputs — generated files not committed
+Outputs/Figures/
+Outputs/Tables/
+Outputs/Validation/
+
+# Supplementary build outputs
+Supplementary/Build_Logs/
+"Supporting Information/Build_Logs/"
+*.pdf
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.blg
+*.bbl
+
+# Misc
+*.zip
+*.tar.gz
+*.7z
+session_info.txt

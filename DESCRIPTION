@@ -1,11 +1,22 @@
 Package: jdPackages
-Type: Package
-Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Date: 2026-02-24
+Title: Personal R Project Scaffolding Tools
+Authors@R: person("Joshua", "Preston", email = "joshua.preston@emory.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9834-3017"))
+Description: Provides repo_template(), a function that scaffolds a complete,
+    reproducible R analysis project following a consistent personal style.
+    Creates directory structure, configuration files, renv setup, pipeline
+    scripts, utility stubs, Docker templates, and GitHub Copilot instructions
+    in one command.
+License: MIT
 Encoding: UTF-8
-LazyData: true
+RoxygenNote: 7.3.2
+Imports:
+    fs,
+    cli,
+    yaml,
+    glue,
+    purrr
+Suggests:
+    renv,
+    remotes

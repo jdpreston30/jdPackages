@@ -1,0 +1,173 @@
+================================================================================
+  QUICKSTART GUIDE — {{PROJECT_NAME}}
+  Generated {{DATE}} by jdPackages::repo_template()
+================================================================================
+
+This file is your onboarding reference. Keep it in the project root.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  1. FIRST-TIME SETUP (new machine or freshly cloned repo)
+────────────────────────────────────────────────────────────────────────────────
+
+Step 1 — Clone the repo (skip if you just ran repo_template())
+  git clone https://github.com/{{GITHUB_USER}}/{{PROJECT_NAME}}.git
+  cd {{PROJECT_NAME}}
+
+Step 2 — Open in RStudio or VSCode as a project.
+  The .Rprofile will activate renv automatically.
+
+Step 3 — Restore packages (first run only; may take 10–20 min)
+  In the R console:
+    renv::restore()
+
+  If TernTablesR is missing after restore, install it manually:
+    remotes::install_github("{{GITHUB_USER}}/TernTablesR")
+
+Step 4 — Configure your computer-specific paths
+  Open:  All_Run/config_dynamic.yaml
+
+  Under "computers:", add an entry for your machine if not already present:
+    my_machine:
+      user_home: "/Users/YOUR_USERNAME"
+      onedrive_path: "Library/CloudStorage/OneDrive-YourInstitution"
+      figures_path: "Outputs/Figures/Final"
+
+  All path templates in the "paths:" section use {user_home} and
+  {onedrive_path} — they are resolved automatically at runtime.
+
+Step 5 — Run the pipeline
+  source("All_Run/run.R")
+
+  Or open individual scripts in R/Scripts/ and run them in order.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  2. PROJECT STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+  {{PROJECT_NAME}}/
+  ├── All_Run/
+  │   ├── config_dynamic.yaml   ← EDIT THIS — computer-specific paths
+  │   └── run.R                 ← Master pipeline entry point
+  ├── R/
+  │   ├── Scripts/              ← Numbered analysis scripts (00a, 00b, 01, ...)
+  │   └── Utilities/
+  │       ├── Analysis/         ← Statistical analysis functions
+  │       ├── Helpers/          ← General helpers (config, I/O, etc.)
+  │       ├── Preprocessing/    ← Data cleaning / feature table functions
+  │       ├── Tabulation/       ← Table-building functions
+  │       ├── Terminal/         ← Interactive terminal shortcuts
+  │       └── Visualization/    ← Plotting functions
+  ├── Outputs/
+  │   ├── Figures/Final/        ← Publication-ready figures
+  │   ├── Figures/PDF/          ← PDF panel components
+  │   ├── Figures/PNG/          ← PNG panel components
+  │   ├── Tables/               ← Generated tables
+  │   └── Validation/           ← Validation output / temp files
+  ├── DESCRIPTION               ← Package-style dependency list (edit Imports:)
+  ├── renv.lock                 ← Exact package versions (committed to git)
+  ├── .Rprofile                 ← Auto-activates renv on project open
+  └── QUICKSTART.txt            ← This file
+
+
+────────────────────────────────────────────────────────────────────────────────
+  3. ADDING PACKAGES
+────────────────────────────────────────────────────────────────────────────────
+
+  a) Add the package name to DESCRIPTION under "Imports:"
+
+  b) For GitHub-only packages (not on CRAN), also add to "Remotes:":
+       Remotes:
+           {{GITHUB_USER}}/TernTablesR
+
+  c) Install it into the renv:
+       renv::install("package_name")           # CRAN
+       renv::install("user/package_name")      # GitHub
+
+  d) Snapshot the lockfile:
+       renv::snapshot()
+
+  e) Commit both DESCRIPTION and renv.lock.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  4. DAILY WORKFLOW
+────────────────────────────────────────────────────────────────────────────────
+
+  - Open project → renv activates automatically via .Rprofile
+  - Run pipeline: source("All_Run/run.R")
+  - Add analysis scripts to R/Scripts/ with the next number prefix
+  - Add utility functions to the appropriate R/Utilities/ subfolder
+  - All utilities are sourced automatically by 00b_setup.R — no manual sourcing
+  - Keep Outputs/ gitignored — sync finals to OneDrive via config paths
+
+
+────────────────────────────────────────────────────────────────────────────────
+  5. RENV MANAGEMENT
+────────────────────────────────────────────────────────────────────────────────
+
+  Check status:       renv::status()
+  Restore packages:   renv::restore()
+  Add package:        renv::install("pkg") → renv::snapshot()
+  Update package:     renv::update("pkg") → renv::snapshot()
+  Diagnostics:        renv::diagnostics()
+
+  jdPackages is intentionally excluded from renv — it is installed globally
+  on your computer as a tool, NOT as a project dependency.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  6. DOCKER DEPLOYMENT (for maximum reproducibility / submission)
+────────────────────────────────────────────────────────────────────────────────
+
+  Docker is typically set up AFTER the analysis is complete and renv.lock is
+  finalized. Use it for submitting to journals or sharing reproducible builds.
+
+  Prerequisites:
+    - Docker Desktop installed and running
+    - renv.lock is up to date (run renv::snapshot() first)
+
+  Build the image (first time or after package changes):
+    docker compose build
+
+  Run the full pipeline inside the container:
+    docker compose up
+
+  Open an interactive R session inside the container:
+    docker compose run r bash
+    # Then inside the container:
+    R
+    source("All_Run/run.R")
+
+  Outputs are written to ./Outputs/ on your host machine via volume mount.
+
+  ⚠  The Docker build copies renv.lock and restores ALL packages from scratch.
+     This can take 30–60 min on first build. Subsequent builds use Docker
+     layer caching and are much faster unless renv.lock changes.
+
+  To add Docker files to an existing project (if you answered N at setup):
+    jdPackages::repo_template_add_docker()
+
+
+────────────────────────────────────────────────────────────────────────────────
+  7. GIT & GITHUB
+────────────────────────────────────────────────────────────────────────────────
+
+  Committed:    R/, All_Run/, DESCRIPTION, renv.lock, .Rprofile, README.md,
+                .gitignore, .renvignore, .github/copilot-instructions.md,
+                QUICKSTART.txt, Dockerfile, docker-compose.yml (if present)
+
+  Gitignored:   renv/library/, Outputs/, raw data (*.csv, *.xlsx, *.mzML, ...)
+
+  Initial push:
+    git init  (if not done)
+    git add .
+    git commit -m "Initial scaffold from jdPackages::repo_template()"
+    git remote add origin https://github.com/{{GITHUB_USER}}/{{PROJECT_NAME}}.git
+    git push -u origin main
+
+
+────────────────────────────────────────────────────────────────────────────────
+  END OF QUICKSTART
+================================================================================
