@@ -9,25 +9,43 @@
 #'   Defaults to current working directory.
 #' @param github_user Character. Your GitHub username, used in DESCRIPTION and
 #'   README placeholders. Defaults to \code{"jdpreston30"}.
+#' @param in_place Logical. If \code{TRUE}, scaffolds into the current working
+#'   directory instead of creating a new subdirectory. Use this when your R
+#'   terminal is already inside the project folder (e.g. a freshly cloned repo).
+#'   Defaults to \code{FALSE}.
 #'
 #' @return Invisibly returns the full path to the created project directory.
 #' @export
 #'
 #' @examples
 #' \dontrun{
+#' # Create a new subdirectory
 #' repo_template("my-new-analysis", path = "~/Desktop/Repos")
+#'
+#' # Scaffold into the current directory (terminal already inside the project)
+#' repo_template(in_place = TRUE)
 #' }
-repo_template <- function(project_name,
+repo_template <- function(project_name = NULL,
                            path        = getwd(),
-                           github_user = "jdpreston30") {
+                           github_user = "jdpreston30",
+                           in_place    = FALSE) {
 
-  #* 1: Validate inputs
-  if (missing(project_name) || !nzchar(project_name)) {
-    cli::cli_abort("project_name must be a non-empty string.")
-  }
-  project_dir <- fs::path_abs(fs::path(path, project_name))
-  if (fs::dir_exists(project_dir)) {
-    cli::cli_abort("Directory already exists: {project_dir}")
+  #* 1: Validate inputs and resolve project directory
+  if (in_place) {
+    project_dir  <- fs::path_abs(getwd())
+    project_name <- fs::path_file(project_dir)
+    cli::cli_alert_info("Scaffolding in place into: {project_dir}")
+  } else {
+    if (is.null(project_name) || !nzchar(project_name)) {
+      cli::cli_abort("project_name must be a non-empty string, or use in_place = TRUE.")
+    }
+    project_dir <- fs::path_abs(fs::path(path, project_name))
+    if (fs::dir_exists(project_dir)) {
+      cli::cli_abort(c(
+        "Directory already exists: {project_dir}",
+        "i" = "If your terminal is already inside the project folder, use: repo_template(in_place = TRUE)"
+      ))
+    }
   }
 
   cli::cli_h1("Scaffolding project: {project_name}")
