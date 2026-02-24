@@ -48,7 +48,7 @@
 
 ## File Organization
 - Scripts: Numbered for pipeline order (00a, 00b, 01, 02, etc.) inside `R/Scripts/`
-- Outputs: Organized in `Outputs/Figures/Final/`, `Outputs/Figures/PDF/`, `Outputs/Figures/PNG/`, `Outputs/Tables/`, `Outputs/Validation/`
+- Outputs: Organized in `Outputs/Figures/` and `Outputs/Tables/`
 - Metadata: Static reference files in `metadata_files/`
 - Use OneDrive for final output storage, local `Outputs/` for run-specific I/O
 - `All_Run/run.R` is the single entry point — sourcing it runs the complete pipeline

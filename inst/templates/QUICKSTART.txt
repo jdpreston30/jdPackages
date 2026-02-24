@@ -60,11 +60,8 @@ Step 5 — Run the pipeline
   │       ├── Terminal/         ← Interactive terminal shortcuts
   │       └── Visualization/    ← Plotting functions
   ├── Outputs/
-  │   ├── Figures/Final/        ← Publication-ready figures
-  │   ├── Figures/PDF/          ← PDF panel components
-  │   ├── Figures/PNG/          ← PNG panel components
-  │   ├── Tables/               ← Generated tables
-  │   └── Validation/           ← Validation output / temp files
+  │   ├── Figures/              ← Generated figures
+  │   └── Tables/               ← Generated tables
   ├── DESCRIPTION               ← Package-style dependency list (edit Imports:)
   ├── renv.lock                 ← Exact package versions (committed to git)
   ├── .Rprofile                 ← Auto-activates renv on project open
@@ -158,7 +155,7 @@ Step 5 — Run the pipeline
                 .gitignore, .renvignore, .github/copilot-instructions.md,
                 QUICKSTART.txt, Dockerfile, docker-compose.yml (if present)
 
-  Gitignored:   renv/library/, Outputs/, raw data (*.csv, *.xlsx, *.mzML, ...)
+  Gitignored:   renv/library/, Outputs/Figures/, Outputs/Tables/, raw data (*.csv, *.xlsx, *.mzML, ...)
 
   Initial push:
     git init  (if not done)

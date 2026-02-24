@@ -9,15 +9,12 @@ computers:
   laptop:
     user_home: "/Users/jdp2019"
     onedrive_path: "Library/CloudStorage/OneDrive-Emory"
-    figures_path: "Outputs/Figures/Final"
+    figures_path: "Outputs/Figures"
 
   desktop:
     user_home: "/Users/JoshsMacbook2015"
     onedrive_path: "Library/CloudStorage/OneDrive-EmoryUniversity"
-    figures_path: "Outputs/Figures/Final"
-
-# ── Dynamic path templates ────────────────────────────────────────────────────
-# {user_home} and {onedrive_path} are substituted at runtime by load_dynamic_config()
+    figures_path: "Outputs/Figures"
 paths:
   # Base data path (raw MS data lives in OneDrive)
   base_data_path: "{user_home}/{onedrive_path}/Research/[ENTER_PROJECT_DATA_PATH]"
@@ -28,9 +25,8 @@ paths:
 
   # Output paths (relative to project root — fast local I/O)
   output:     "./Outputs"
-  figures:    "{figures_path}"
+  figures:    "Outputs/Figures"
   tables:     "Outputs/Tables"
-  validation: "Outputs/Validation"
 
   # OneDrive output sync location (for final figures)
   figures_onedrive: "{user_home}/{onedrive_path}/Research/[ENTER_PROJECT_DATA_PATH]/Figures"

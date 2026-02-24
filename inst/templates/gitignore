@@ -63,7 +63,6 @@ renv/staging/
 # Outputs — generated files not committed
 Outputs/Figures/
 Outputs/Tables/
-Outputs/Validation/
 
 # Supplementary build outputs
 Supplementary/Build_Logs/

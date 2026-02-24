@@ -48,9 +48,8 @@ See `QUICKSTART.txt` for complete onboarding instructions.
 │   ├── Scripts/              # Numbered pipeline scripts (00a, 00b, 01, 02, ...)
 │   └── Utilities/            # Reusable functions (Analysis, Helpers, Visualization, ...)
 ├── Outputs/
-│   ├── Figures/              # Final/PDF/PNG subdirectories
-│   ├── Tables/
-│   └── Validation/
+│   ├── Figures/              # Generated figures
+│   └── Tables/               # Generated tables
 ├── DESCRIPTION               # Package-style dependency declaration
 ├── QUICKSTART.txt            # Full onboarding guide
 └── renv.lock                 # Exact package versions
