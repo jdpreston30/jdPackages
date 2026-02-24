@@ -12,23 +12,24 @@
 #' @param in_place Logical. If \code{TRUE}, scaffolds into the current working
 #'   directory instead of creating a new subdirectory. Use this when your R
 #'   terminal is already inside the project folder (e.g. a freshly cloned repo).
-#'   Defaults to \code{FALSE}.
+#'   Defaults to \code{TRUE} — so \code{repo_template()} with no arguments works
+#'   out of the box.
 #'
 #' @return Invisibly returns the full path to the created project directory.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Create a new subdirectory
-#' repo_template("my-new-analysis", path = "~/Desktop/Repos")
+#' # Scaffold into the current directory (default — terminal already inside the project)
+#' repo_template()
 #'
-#' # Scaffold into the current directory (terminal already inside the project)
-#' repo_template(in_place = TRUE)
+#' # Create a new named subdirectory elsewhere
+#' repo_template("my-new-analysis", path = "~/Desktop/Repos", in_place = FALSE)
 #' }
 repo_template <- function(project_name = NULL,
                            path        = getwd(),
                            github_user = "jdpreston30",
-                           in_place    = FALSE) {
+                           in_place    = TRUE) {
 
   #* 1: Validate inputs and resolve project directory
   if (in_place) {
@@ -37,7 +38,7 @@ repo_template <- function(project_name = NULL,
     cli::cli_alert_info("Scaffolding in place into: {project_dir}")
   } else {
     if (is.null(project_name) || !nzchar(project_name)) {
-      cli::cli_abort("project_name must be a non-empty string, or use in_place = TRUE.")
+      cli::cli_abort("project_name must be a non-empty string when in_place = FALSE.")
     }
     project_dir <- fs::path_abs(fs::path(path, project_name))
     if (fs::dir_exists(project_dir)) {
