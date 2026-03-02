@@ -24,11 +24,14 @@ options(
   datatable.print.keys  = config$analysis$datatable_options$print_keys
 )
 #+ 0b.3: Package conflict resolution
-# Explicitly namespace functions that conflict across packages.
-# Uncomment and add to this section as needed.
-# filter  <- dplyr::filter
-# select  <- dplyr::select
-# rename  <- dplyr::rename
-# mutate  <- dplyr::mutate
-# [ADD CONFLICT RESOLUTIONS HERE]
+# All conflicts resolved explicitly via conflicted — any unresolved conflict will throw
+# an error instead of silently using the wrong function.
+library(conflicted)
+conflict_prefer("filter",    "dplyr")
+conflict_prefer("lag",       "dplyr")
+conflict_prefer("intersect", "dplyr")
+conflict_prefer("union",     "dplyr")
+conflict_prefer("setdiff",   "dplyr")
+conflict_prefer("setequal",  "dplyr")
+# [ADD project-specific conflict_prefer() calls here as needed]
 cat("Setup complete. Pipeline ready.\n")
