@@ -38,7 +38,7 @@
 - Store configuration in `.GlobalEnv$config` for global access throughout pipeline
 - Use `load_dynamic_config()` pattern for automatic computer detection and path resolution
 - Declare all package dependencies in `DESCRIPTION` under `Imports:` (and `Remotes:` for GitHub packages)
-- GitHub-only packages (e.g. TernTablesR) go in both `Imports:` and `Remotes:` in DESCRIPTION
+- GitHub-only packages (e.g. TernTables) go in both `Imports:` and `Remotes:` in DESCRIPTION
 
 ## Functions
 - Use roxygen2-style documentation for all utility functions
@@ -52,8 +52,8 @@
 - Use OneDrive for final output storage, local `Outputs/` for run-specific I/O
 - `All_Run/run.R` is the single entry point — sourcing it runs the complete pipeline
 
-## TernTablesR
-- `TernTablesR` (from GitHub: `jdpreston30/TernTablesR`) is a standard dependency
+## TernTables
+- `TernTables` (from GitHub: `jdpreston30/TernTables`) is a standard dependency
 - It is declared in `DESCRIPTION` under both `Imports:` and `Remotes:`
-- Install via: `remotes::install_github("jdpreston30/TernTablesR")`
+- Install via: `remotes::install_github("jdpreston30/TernTables")`
 - It is **not** on CRAN — do not use `install.packages()` for it

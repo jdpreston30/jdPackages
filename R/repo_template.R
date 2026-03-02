@@ -109,7 +109,7 @@ repo_template <- function(project_name = NULL,
   cli::cli_h2("renv Setup")
   cli::cli_alert_info(paste0(
     "renv provides reproducible package management by locking exact package versions.\n",
-    "  This will: initialize renv, install TernTablesR from GitHub, and snapshot the lockfile."
+    "  This will: initialize renv, install TernTables from GitHub, and snapshot the lockfile."
   ))
   init_renv <- .prompt_yn("Initialize renv now? (recommended)", default = TRUE)
 
@@ -128,20 +128,20 @@ repo_template <- function(project_name = NULL,
       cli::cli_alert_info("You can run renv::init() manually inside the project.")
     })
 
-    #+ 4.2: Install TernTablesR from GitHub
-    cli::cli_alert_info("Installing TernTablesR from {github_user}/TernTablesR...")
+    #+ 4.2: Install TernTables from GitHub
+    cli::cli_alert_info("Installing TernTables from {github_user}/TernTables...")
     tryCatch({
       if (!requireNamespace("remotes", quietly = TRUE)) {
         renv::install("remotes")
       }
       remotes::install_github(
-        paste0(github_user, "/TernTablesR"),
+        paste0(github_user, "/TernTables"),
         upgrade = "never"
       )
-      cli::cli_alert_success("TernTablesR installed")
+      cli::cli_alert_success("TernTables installed")
     }, error = function(e) {
-      cli::cli_alert_warning("Could not install TernTablesR: {e$message}")
-      cli::cli_alert_info("Run: remotes::install_github(\"{github_user}/TernTablesR\") manually.")
+      cli::cli_alert_warning("Could not install TernTables: {e$message}")
+      cli::cli_alert_info("Run: remotes::install_github(\"{github_user}/TernTables\") manually.")
     })
 
     #+ 4.3: Snapshot lockfile

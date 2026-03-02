@@ -21,8 +21,8 @@ Step 3 — Restore packages (first run only; may take 10–20 min)
   In the R console:
     renv::restore()
 
-  If TernTablesR is missing after restore, install it manually:
-    remotes::install_github("{{GITHUB_USER}}/TernTablesR")
+  If TernTables is missing after restore, install it manually:
+    remotes::install_github("{{GITHUB_USER}}/TernTables")
 
 Step 4 — Configure your computer-specific paths
   Open:  All_Run/config_dynamic.yaml
@@ -76,7 +76,7 @@ Step 5 — Run the pipeline
 
   b) For GitHub-only packages (not on CRAN), also add to "Remotes:":
        Remotes:
-           {{GITHUB_USER}}/TernTablesR
+           {{GITHUB_USER}}/TernTables
 
   c) Install it into the renv:
        renv::install("package_name")           # CRAN

@@ -14,9 +14,9 @@ Imports:
     ggplot2,
     here,
     yaml,
-    TernTablesR
+    TernTables
 Remotes:
-    {{GITHUB_USER}}/TernTablesR
+    {{GITHUB_USER}}/TernTables
 SystemRequirements:
     TinyTeX (LaTeX distribution) - automatically installed via tinytex::install_tinytex() if not present
 Encoding: UTF-8

@@ -49,7 +49,7 @@ if (length(missing_cran) > 0) {
 } else {
   cat("renv environment verified. All CRAN/Bioconductor packages available.\n")
 }
-#- 0a.4.2: GitHub-only packages (e.g. TernTablesR) via remotes::install_github()
+#- 0a.4.2: GitHub-only packages (e.g. TernTables) via remotes::install_github()
 missing_github <- github_pkg_names[!sapply(github_pkg_names, requireNamespace, quietly = TRUE)]
 if (length(missing_github) > 0) {
   cat("GitHub-only packages missing:", paste(missing_github, collapse = ", "), "\n")
