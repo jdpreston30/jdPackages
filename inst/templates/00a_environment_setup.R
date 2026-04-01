@@ -5,11 +5,11 @@ if (!("renv" %in% loadedNamespaces())) {
   warning("renv is not active. Attempting to activate...")
   source("renv/activate.R")
 }
-#+ 0a.2: Ensure jdPackages is excluded from renv (it is a global tool, not a project dependency)
+#+ 0a.2: Ensure JDP.repo is excluded from renv (it is a global tool, not a project dependency)
 tryCatch({
   current_ignored <- renv::settings$ignored.packages()
-  if (!"jdPackages" %in% current_ignored) {
-    renv::settings$ignored.packages(c(current_ignored, "jdPackages"))
+  if (!"JDP.repo" %in% current_ignored) {
+    renv::settings$ignored.packages(c(current_ignored, "JDP.repo"))
   }
 }, error = function(e) NULL)
 #+ 0a.3: Read package lists from DESCRIPTION

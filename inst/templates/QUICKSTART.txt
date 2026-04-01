@@ -1,6 +1,6 @@
 ================================================================================
   QUICKSTART GUIDE — {{PROJECT_NAME}}
-  Generated {{DATE}} by jdPackages::repo_template()
+  Generated {{DATE}} by JDP.repo::repo_template()
 ================================================================================
 
 This file is your onboarding reference. Keep it in the project root.
@@ -110,7 +110,7 @@ Step 5 — Run the pipeline
   Update package:     renv::update("pkg") → renv::snapshot()
   Diagnostics:        renv::diagnostics()
 
-  jdPackages is intentionally excluded from renv — it is installed globally
+  JDP.repo is intentionally excluded from renv — it is installed globally
   on your computer as a tool, NOT as a project dependency.
 
 
@@ -144,7 +144,7 @@ Step 5 — Run the pipeline
      layer caching and are much faster unless renv.lock changes.
 
   To add Docker files to an existing project (if you answered N at setup):
-    jdPackages::repo_template_add_docker()
+    JDP.repo::repo_template_add_docker()
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ Step 5 — Run the pipeline
   Initial push:
     git init  (if not done)
     git add .
-    git commit -m "Initial scaffold from jdPackages::repo_template()"
+    git commit -m "Initial scaffold from JDP.repo::repo_template()"
     git remote add origin https://github.com/{{GITHUB_USER}}/{{PROJECT_NAME}}.git
     git push -u origin main
 

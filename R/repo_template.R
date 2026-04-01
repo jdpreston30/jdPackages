@@ -218,7 +218,7 @@ repo_template_add_docker <- function(project_dir = getwd()) {
 
 #' @keywords internal
 write_tmpl <- function(project_dir, dest_relpath, template_name, subs) {
-  tmpl_path <- system.file("templates", template_name, package = "jdPackages")
+  tmpl_path <- system.file("templates", template_name, package = "JDP.repo")
   if (!nzchar(tmpl_path) || !file.exists(tmpl_path)) {
     cli::cli_alert_warning("Template not found: {template_name} — skipping.")
     return(invisible(NULL))
