@@ -174,7 +174,192 @@ repo_template <- function(project_name = NULL,
     cli::cli_alert_info("Skipped. Run repo_template_add_docker(\"{project_dir}\") to add later.")
   }
 
-  #* 6: Final summary
+  #* 6: Interactive prompt — GitHub repository linking
+  cli::cli_h2("GitHub Repository Setup")
+  cli::cli_alert_info(paste0(
+    "Linking to GitHub lets you back up your work, collaborate, and version-control\n",
+    "  your analysis. This step will push the initial scaffold to a new remote repo."
+  ))
+  link_github <- .prompt_yn("Link this project to a GitHub repository?", default = FALSE)
+
+  if (link_github) {
+    #+ 6.1: Check for GitHub CLI — use it if available, otherwise fall back to browser+paste
+    gh_available <- nzchar(Sys.which("gh"))
+    gh_authed    <- FALSE
+    if (gh_available) {
+      auth_check <- system2("gh", c("auth", "status"), stdout = TRUE, stderr = TRUE)
+      gh_authed  <- !isTRUE(attr(auth_check, "status") != 0)
+    }
+
+    if (gh_available && gh_authed) {
+      #+ 6.1a: Fully automatic path via GitHub CLI
+      cli::cli_text("")
+      cli::cli_rule(left = "GitHub CLI detected \u2014 creating repository automatically")
+      cli::cli_text("")
+
+      visibility_ans <- ""
+      repeat {
+        visibility_ans <- trimws(tolower(readline(
+          prompt = "  ? Visibility \u2014 public or private? [public/private]: "
+        )))
+        if (visibility_ans %in% c("public", "private")) break
+        cli::cli_alert_warning("Please type 'public' or 'private'.")
+      }
+
+      cli::cli_alert_info("Creating {visibility_ans} repository '{project_name}' on GitHub...")
+      gh_out <- system2(
+        "gh",
+        c("repo", "create", paste0(github_user, "/", project_name),
+          paste0("--", visibility_ans), "--no-clone"),
+        stdout = TRUE, stderr = TRUE
+      )
+      gh_status <- attr(gh_out, "status")
+
+      if (isTRUE(gh_status != 0)) {
+        cli::cli_alert_warning("gh repo create failed: {paste(gh_out, collapse = ' ')}")
+        cli::cli_alert_info("Falling back to manual URL entry...")
+        gh_authed <- FALSE  # trigger fallback below
+      } else {
+        # gh prints the repo URL to stdout
+        remote_url <- trimws(gh_out[nzchar(trimws(gh_out))][1])
+        if (!grepl("github\\.com", remote_url)) {
+          remote_url <- paste0("https://github.com/", github_user, "/", project_name, ".git")
+        }
+        cli::cli_alert_success("Repository created: {.url {remote_url}}")
+      }
+    }
+
+    if (!gh_available || !gh_authed) {
+      #+ 6.1b: Manual path — open browser, user pastes URL
+      cli::cli_text("")
+      if (!gh_available) {
+        cli::cli_alert_info(
+          "GitHub CLI (gh) not found. Opening GitHub in your browser instead."
+        )
+        cli::cli_alert_info(
+          "Tip: install gh for a fully automatic experience \u2014 {.url https://cli.github.com}"
+        )
+      } else {
+        cli::cli_alert_info("GitHub CLI is not authenticated. Opening GitHub in your browser.")
+        cli::cli_alert_info("Tip: run {.code gh auth login} once to enable full automation.")
+      }
+      cli::cli_text("")
+      cli::cli_rule(left = "STEP 1 \u2014 Create a new repository on GitHub")
+      cli::cli_text("")
+      cli::cli_alert_info("Opening https://github.com/new in your browser...")
+      utils::browseURL("https://github.com/new")
+      cli::cli_text("")
+      cli::cli_bullets(c(
+        "1" = "A browser tab just opened to: {.url https://github.com/new}",
+        "2" = "Set the repository name to: {.strong {project_name}}",
+        "3" = "{.emph Leave it EMPTY} \u2014 do NOT add a README, .gitignore, or license",
+        "  " = "(the template already provides all of these)",
+        "4" = "Set visibility to Public or Private as desired",
+        "5" = "Click {.strong \"Create repository\"}",
+        "6" = "On the next page, copy the HTTPS URL shown under \"Quick setup\"",
+        "  " = "It will look like: https://github.com/{github_user}/{project_name}.git"
+      ))
+      cli::cli_text("")
+      cli::cli_rule(left = "STEP 2 \u2014 Paste the URL below")
+      cli::cli_text("")
+
+      remote_url <- ""
+      repeat {
+        remote_url <- trimws(readline(prompt = "  > Paste GitHub repository URL: "))
+        if (grepl("^https://github\\.com/.+/.+\\.git$", remote_url) ||
+            grepl("^git@github\\.com:.+/.+\\.git$", remote_url) ||
+            grepl("^https://github\\.com/.+/.+$", remote_url)) {
+          break
+        }
+        if (nzchar(remote_url)) {
+          cli::cli_alert_warning("That doesn't look like a valid GitHub URL. Please try again.")
+          cli::cli_alert_info("Expected format: https://github.com/{github_user}/{project_name}.git")
+        } else {
+          cli::cli_alert_warning("URL cannot be blank. Please paste the URL from GitHub.")
+        }
+      }
+    }
+
+    #+ 6.3: Initialize git and link remote
+    old_wd2 <- getwd()
+    on.exit(setwd(old_wd2), add = TRUE)
+    setwd(project_dir)
+
+    git_ok <- TRUE
+
+    # Initialise git repo if not already done
+    if (!fs::dir_exists(fs::path(project_dir, ".git"))) {
+      cli::cli_alert_info("Initializing git repository...")
+      result <- system2("git", c("init", "-b", "main"), stdout = TRUE, stderr = TRUE)
+      if (!identical(attr(result, "status"), 0L) && !is.null(attr(result, "status"))) {
+        # Older git versions don't support -b; try plain init + branch rename
+        system2("git", "init", stdout = FALSE, stderr = FALSE)
+        system2("git", c("checkout", "-b", "main"), stdout = FALSE, stderr = FALSE)
+      }
+      cli::cli_alert_success("Git repository initialized")
+    }
+
+    # Set remote origin
+    cli::cli_alert_info("Setting remote origin to: {remote_url}")
+    ret <- system2("git", c("remote", "add", "origin", remote_url),
+                   stdout = TRUE, stderr = TRUE)
+    if (isTRUE(attr(ret, "status") != 0)) {
+      # Remote may already exist — update it instead
+      system2("git", c("remote", "set-url", "origin", remote_url),
+              stdout = FALSE, stderr = FALSE)
+      cli::cli_alert_info("Remote origin updated")
+    } else {
+      cli::cli_alert_success("Remote origin set")
+    }
+
+    # Stage all files
+    cli::cli_alert_info("Staging all project files...")
+    ret <- system2("git", c("add", "-A"), stdout = TRUE, stderr = TRUE)
+    if (isTRUE(attr(ret, "status") != 0)) {
+      cli::cli_alert_warning("git add failed. You may need to commit manually.")
+      git_ok <- FALSE
+    }
+
+    # Initial commit
+    if (git_ok) {
+      cli::cli_alert_info("Creating initial commit...")
+      ret <- system2(
+        "git",
+        c("commit", "-m", "Initial scaffold via jdPackages::repo_template()"),
+        stdout = TRUE, stderr = TRUE
+      )
+      if (isTRUE(attr(ret, "status") != 0)) {
+        cli::cli_alert_warning("git commit failed. Check git config user.name / user.email.")
+        git_ok <- FALSE
+      } else {
+        cli::cli_alert_success("Initial commit created")
+      }
+    }
+
+    # Push to GitHub
+    if (git_ok) {
+      cli::cli_alert_info("Pushing to GitHub (this may prompt for credentials)...")
+      ret <- system2("git", c("push", "-u", "origin", "main"),
+                     stdout = TRUE, stderr = TRUE)
+      if (isTRUE(attr(ret, "status") != 0)) {
+        cli::cli_alert_warning("Push failed. Common fixes:")
+        cli::cli_bullets(c(
+          "x" = "Make sure the GitHub repo exists and the URL is correct",
+          "x" = "Authenticate via: gh auth login  (GitHub CLI) or configure a PAT",
+          "i" = "Then manually run: git push -u origin main"
+        ))
+      } else {
+        cli::cli_alert_success("Project pushed to GitHub!")
+        cli::cli_alert_info("View your repo at: {.url {sub(\"\\\\.git$\", \"\", remote_url)}}")
+      }
+    }
+
+    setwd(old_wd2)
+  } else {
+    cli::cli_alert_info("Skipped. To link later, run: git remote add origin <url> && git push -u origin main")
+  }
+
+  #* 7: Final summary
   cli::cli_h1("Project ready: {project_name}")
   cli::cli_bullets(c(
     "v" = "Project directory: {project_dir}",
