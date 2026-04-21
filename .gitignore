@@ -10,5 +10,7 @@
 .Rapp.history
 .Rproj.user/
 
-# renv (if ever added to this package)
-renv/library/
+# renv (must never be committed to the package repo itself)
+renv/
+renv.lock
+.Rprofile
