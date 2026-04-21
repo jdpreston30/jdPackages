@@ -1,5 +1,5 @@
 Package: JDP.repo
-Version: 0.1.0
+Version: 0.1.3
 Date: 2026-02-24
 Title: Personal R Project Scaffolding Tools
 Authors@R: person("Joshua", "Preston", email = "joshua.preston@emory.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9834-3017"))
