@@ -199,18 +199,20 @@ repo_template <- function(project_name = NULL,
 
       visibility_ans <- ""
       repeat {
-        visibility_ans <- trimws(tolower(readline(
-          prompt = "  ? Visibility \u2014 public or private? [public/private]: "
-        )))
-        if (visibility_ans %in% c("public", "private")) break
-        cli::cli_alert_warning("Please type 'public' or 'private'.")
+        cli::cli_text("  ? Visibility \u2014 select one:")
+        cli::cli_text("    1: public")
+        cli::cli_text("    2: private")
+        vis_choice <- trimws(readline(prompt = "  Selection: "))
+        if (vis_choice == "1") { visibility_ans <- "public";  break }
+        if (vis_choice == "2") { visibility_ans <- "private"; break }
+        cli::cli_alert_warning("Please enter 1 (public) or 2 (private).")
       }
 
       cli::cli_alert_info("Creating {visibility_ans} repository '{project_name}' on GitHub...")
       gh_out <- system2(
         "gh",
         c("repo", "create", paste0(github_user, "/", project_name),
-          paste0("--", visibility_ans), "--no-clone"),
+          paste0("--", visibility_ans)),
         stdout = TRUE, stderr = TRUE
       )
       gh_status <- attr(gh_out, "status")
@@ -325,7 +327,7 @@ repo_template <- function(project_name = NULL,
       cli::cli_alert_info("Creating initial commit...")
       ret <- system2(
         "git",
-        c("commit", "-m", "Initial scaffold via jdPackages::repo_template()"),
+        c("commit", "-m", shQuote("Initial scaffold via JDP.repo::repo_template()")),
         stdout = TRUE, stderr = TRUE
       )
       if (isTRUE(attr(ret, "status") != 0)) {
