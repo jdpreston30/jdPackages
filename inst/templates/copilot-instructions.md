@@ -15,6 +15,29 @@
 - **Comments are brief and descriptive**: Typically compound names, short phrases, or action descriptions
 - **Compact code style**: NO extra blank lines between sections or subsections - code should be dense
 - **No blank lines after section headers**: Code immediately follows comment headers
+- **Curly-bracket grouping rule**: When a `#+` or `#-` subheader is followed by **two or more R statements that form an indivisible unit**, wrap those statements in `{}` immediately after the comment — so the entire block can be selected and run with a single Ctrl+Enter. Do NOT place `{}` on the line before the comment header (i.e. the `{` always goes on the line AFTER the comment). Single-statement expressions and simple sequential variable definitions that are each individually self-contained do not require brackets.
+  ```r
+  # CORRECT — two model fits that must always run together
+  #- 4.2.1: Univariate Cox
+  {
+  cox_os_fits  <- lapply(predictors, function(v) coxph(..., data = df))
+  cox_pfs_fits <- lapply(predictors, function(v) coxph(..., data = df))
+  }
+
+  # CORRECT — independent definitions, no bracket needed
+  #+ 4.1: Variable metadata
+  predictors <- c("var1", "var2", "var3")
+  var_labels  <- c(var1 = "Label 1", var2 = "Label 2")
+
+  # WRONG — bracket placed before the comment header
+  #+ 4.1: Variable metadata
+  {
+  predictors <- c("var1", "var2")
+  }
+  #- 4.2.1: Univariate Cox
+  cox_os_fits  <- lapply(...)   # ← no bracket even though there are two statements
+  cox_pfs_fits <- lapply(...)
+  ```
 - **Example structure**:
   ```r
   #* 9: Major Section
