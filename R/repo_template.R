@@ -72,16 +72,33 @@ repo_template <- function(project_name = NULL,
   })
   cli::cli_alert_success("Directory structure created")
 
+  #* 2.5: Interactive prompt — project type
+  cli::cli_h2("Project Type")
+  project_type <- ""
+  repeat {
+    cli::cli_text("  ? What type of project is this \u2014 select one:")
+    cli::cli_text("    1: Clinical       (lightweight \u2014 no Bioconductor)")
+    cli::cli_text("    2: Metabolomics   (full stack \u2014 WGCNA, limma, igraph, ggraph + BiocManager)")
+    pt_choice <- trimws(readline(prompt = "  Selection: "))
+    if (pt_choice == "1") { project_type <- "clinical";     break }
+    if (pt_choice == "2") { project_type <- "metabolomics"; break }
+    cli::cli_alert_warning("Please enter 1 (Clinical) or 2 (Metabolomics).")
+  }
+  project_type_label <- if (project_type == "clinical") "Clinical" else "Metabolomics"
+  cli::cli_alert_success("Project type: {project_type_label}")
+
   #* 3: Define substitution values
   subs <- list(
-    PROJECT_NAME = project_name,
-    GITHUB_USER  = github_user,
-    DATE         = format(Sys.Date(), "%Y-%m-%d"),
-    YEAR         = format(Sys.Date(), "%Y")
+    PROJECT_NAME       = project_name,
+    GITHUB_USER        = github_user,
+    DATE               = format(Sys.Date(), "%Y-%m-%d"),
+    YEAR               = format(Sys.Date(), "%Y"),
+    PROJECT_TYPE_LABEL = project_type_label
   )
 
   #+ 3.1: Write template files
-  write_tmpl(project_dir, "DESCRIPTION",                    "DESCRIPTION",                subs)
+  desc_tmpl <- if (project_type == "metabolomics") "DESCRIPTION_metabolomics" else "DESCRIPTION"
+  write_tmpl(project_dir, "DESCRIPTION",                    desc_tmpl,                    subs)
   write_tmpl(project_dir, "README.md",                      "README.md",                  subs)
   write_tmpl(project_dir, ".gitignore",                     "gitignore",                  subs)
   write_tmpl(project_dir, ".Rprofile",                      "Rprofile",                   subs)
@@ -92,7 +109,8 @@ repo_template <- function(project_name = NULL,
   write_tmpl(project_dir, ".vscode/settings.json",                   "vscode_settings.json",            subs)
   write_tmpl(project_dir, "All_Run/config_dynamic.yaml",    "config_dynamic.yaml",        subs)
   write_tmpl(project_dir, "All_Run/run.R",                  "run.R",                      subs)
-  write_tmpl(project_dir, "R/Scripts/00a_environment_setup.R", "00a_environment_setup.R", subs)
+  setup_tmpl <- if (project_type == "metabolomics") "00a_environment_setup_metabolomics.R" else "00a_environment_setup.R"
+  write_tmpl(project_dir, "R/Scripts/00a_environment_setup.R", setup_tmpl,                subs)
   write_tmpl(project_dir, "R/Scripts/00b_setup.R",          "00b_setup.R",                subs)
   write_tmpl(project_dir, "R/Scripts/01_step1.R",           "01_step1.R",                 subs)
   write_tmpl(project_dir, "R/Scripts/02_step2.R",           "02_step2.R",                 subs)
@@ -110,7 +128,7 @@ repo_template <- function(project_name = NULL,
   cli::cli_h2("renv Setup")
   cli::cli_alert_info(paste0(
     "renv provides reproducible package management by locking exact package versions.\n",
-    "  This will: initialize renv, install TernTables from GitHub, and snapshot the lockfile."
+    "  This will: initialize renv, install all packages (+ Bioconductor for metabolomics), and snapshot the lockfile."
   ))
   init_renv <- .prompt_yn("Initialize renv now? (recommended)", default = TRUE)
 
@@ -129,21 +147,29 @@ repo_template <- function(project_name = NULL,
       cli::cli_alert_info("You can run renv::init() manually inside the project.")
     })
 
-    #+ 4.2: Install TernTables from GitHub
-    cli::cli_alert_info("Installing TernTables from {github_user}/TernTables...")
+    #+ 4.2: Install TernTables via r-universe (repos already set in .Rprofile)
+    cli::cli_alert_info("Installing TernTables from r-universe...")
     tryCatch({
-      if (!requireNamespace("remotes", quietly = TRUE)) {
-        renv::install("remotes")
-      }
-      remotes::install_github(
-        paste0(github_user, "/TernTables"),
-        upgrade = "never"
-      )
+      renv::install("TernTables")
       cli::cli_alert_success("TernTables installed")
     }, error = function(e) {
       cli::cli_alert_warning("Could not install TernTables: {e$message}")
-      cli::cli_alert_info("Run: remotes::install_github(\"{github_user}/TernTables\") manually.")
+      cli::cli_alert_info("Run: renv::install(\"TernTables\") manually.")
     })
+
+    #+ 4.2b: Metabolomics — install Bioconductor packages and extras
+    if (project_type == "metabolomics") {
+      cli::cli_alert_info("Installing Bioconductor packages (WGCNA, limma) and graph extras...")
+      tryCatch({
+        if (!requireNamespace("BiocManager", quietly = TRUE)) renv::install("BiocManager")
+        BiocManager::install(c("WGCNA", "limma"), update = FALSE, ask = FALSE)
+        renv::install(c("igraph", "ggraph", "ggrepel", "patchwork", "cowplot"))
+        cli::cli_alert_success("Metabolomics packages installed")
+      }, error = function(e) {
+        cli::cli_alert_warning("Could not install some packages: {e$message}")
+        cli::cli_alert_info("Run BiocManager::install(c(\"WGCNA\", \"limma\")) manually.")
+      })
+    }
 
     #+ 4.3: Snapshot lockfile
     tryCatch({
