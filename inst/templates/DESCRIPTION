@@ -16,10 +16,7 @@ Imports:
     here,
     yaml,
     jsonlite,
-    remotes,
     TernTables
-Remotes:
-    {{GITHUB_USER}}/TernTables
 SystemRequirements:
     TinyTeX (LaTeX distribution) - automatically installed via tinytex::install_tinytex() if not present
 Encoding: UTF-8

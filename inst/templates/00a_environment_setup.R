@@ -12,27 +12,19 @@ tryCatch({
     renv::settings$ignored.packages(c(current_ignored, "JDP.repo"))
   }
 }, error = function(e) NULL)
-#+ 0a.3: Read package lists from DESCRIPTION
+#+ 0a.3: Read package list from DESCRIPTION (Imports field)
+# All packages — including TernTables — are CRAN-compatible via r-universe.
+# No Remotes field or remotes/devtools required.
 desc <- read.dcf(here::here("DESCRIPTION"))
-#- 0a.3.1: CRAN / Bioconductor packages (Imports field)
-raw_imports  <- trimws(strsplit(desc[, "Imports"], ",\\s*|\n\\s*")[[1]])
-cran_pkgs    <- raw_imports[nzchar(raw_imports)]
-#- 0a.3.2: GitHub-only packages (Remotes field) — these need remotes::install_github()
-github_pkgs <- character(0)
-if ("Remotes" %in% colnames(desc)) {
-  raw_remotes  <- trimws(strsplit(desc[, "Remotes"], ",\\s*|\n\\s*")[[1]])
-  github_pkgs  <- raw_remotes[nzchar(raw_remotes)]
-}
-# Package names only (strip version pins like " (>= 1.0)")
+raw_imports <- trimws(strsplit(desc[, "Imports"], ",\\s*|\n\\s*")[[1]])
+cran_pkgs   <- raw_imports[nzchar(raw_imports)]
+# Strip version pins like " (>= 1.0)"
 pkg_names <- gsub("\\s*\\(.*\\)", "", cran_pkgs)
-# For GitHub remotes the install name is the repo (user/pkg) but the namespace name is just pkg
-github_pkg_names <- basename(github_pkgs)
-#+ 0a.4: Check and install missing packages
-#- 0a.4.1: CRAN/Bioconductor packages via renv::restore()
-non_github_names <- setdiff(pkg_names, github_pkg_names)
-missing_cran     <- non_github_names[!sapply(non_github_names, requireNamespace, quietly = TRUE)]
-if (length(missing_cran) > 0) {
-  cat("Core packages missing:", paste(missing_cran, collapse = ", "), "\n")
+#+ 0a.4: Check and install missing packages via renv::restore()
+# renv uses repos set in .Rprofile (including r-universe) so TernTables is handled automatically.
+missing_pkgs <- pkg_names[!sapply(pkg_names, requireNamespace, quietly = TRUE)]
+if (length(missing_pkgs) > 0) {
+  cat("Packages missing:", paste(missing_pkgs, collapse = ", "), "\n")
   cat("Running renv::restore() to install packages (may take 10-20 min on first run)...\n\n")
   tryCatch({
     renv::restore(prompt = FALSE)
@@ -41,29 +33,13 @@ if (length(missing_cran) > 0) {
     stop("Failed to restore packages: ", e$message,
          "\nPlease run renv::restore() manually and check for errors.")
   })
-  still_missing <- non_github_names[!sapply(non_github_names, requireNamespace, quietly = TRUE)]
+  still_missing <- pkg_names[!sapply(pkg_names, requireNamespace, quietly = TRUE)]
   if (length(still_missing) > 0) {
     stop("Packages still missing after restore: ", paste(still_missing, collapse = ", "),
          "\nPlease check renv::status() for details.")
   }
 } else {
-  cat("renv environment verified. All CRAN/Bioconductor packages available.\n")
-}
-#- 0a.4.2: GitHub-only packages (e.g. TernTables) via remotes::install_github()
-missing_github <- github_pkg_names[!sapply(github_pkg_names, requireNamespace, quietly = TRUE)]
-if (length(missing_github) > 0) {
-  cat("GitHub-only packages missing:", paste(missing_github, collapse = ", "), "\n")
-  if (!requireNamespace("remotes", quietly = TRUE)) renv::install("remotes")
-  for (repo in github_pkgs) {
-    pkg_nm <- basename(repo)
-    if (!requireNamespace(pkg_nm, quietly = TRUE)) {
-      cat("Installing", pkg_nm, "from GitHub:", repo, "\n")
-      tryCatch(
-        remotes::install_github(repo, upgrade = "never"),
-        error = function(e) warning("Could not install ", repo, ": ", e$message)
-      )
-    }
-  }
+  cat("renv environment verified. All packages available.\n")
 }
 #+ 0a.5: Load all packages from DESCRIPTION
 cat("Loading packages...\n")

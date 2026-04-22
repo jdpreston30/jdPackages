@@ -37,10 +37,11 @@
 - Load all utility functions at setup with: `purrr::walk(list.files("R/Utilities", recursive = TRUE, full.names = TRUE, pattern = "\\.R$"), source)`
 - Store configuration in `.GlobalEnv$config` for global access throughout pipeline
 - Use `load_dynamic_config()` pattern for automatic computer detection and path resolution
-- Declare all package dependencies in `DESCRIPTION` under `Imports:` (and `Remotes:` for GitHub packages)
-- GitHub-only packages (e.g. TernTables) go in both `Imports:` and `Remotes:` in DESCRIPTION
+- Declare all package dependencies in `DESCRIPTION` under `Imports:` only — no `Remotes:` field needed
+- Non-CRAN packages (e.g. TernTables) are available via r-universe, which is configured in `.Rprofile` — treat them exactly like CRAN packages
 
 ## Functions
+- **NEVER write functions or helpers directly inside `R/Scripts/` files.** Scripts are exclusively for pipeline steps (data flow, calling functions, orchestration). Every reusable function — no matter how small — must be modularized into its own dedicated file inside `R/Utilities/` (e.g., `R/Utilities/Helpers/`, `R/Utilities/Visualization/`, `R/Utilities/Analysis/`). One logical unit per file.
 - Use roxygen2-style documentation for all utility functions
 - Prefer tidyverse functions when appropriate
 - Functions should respect YAML configuration flags (e.g., skip logic based on `config$` parameters)
@@ -53,7 +54,9 @@
 - `All_Run/run.R` is the single entry point — sourcing it runs the complete pipeline
 
 ## TernTables
-- `TernTables` (from GitHub: `jdpreston30/TernTables`) is a standard dependency
-- It is declared in `DESCRIPTION` under both `Imports:` and `Remotes:`
-- Install via: `remotes::install_github("jdpreston30/TernTables")`
-- It is **not** on CRAN — do not use `install.packages()` for it
+- `TernTables` is a standard dependency declared in `DESCRIPTION` under `Imports:` only (no `Remotes:` field needed)
+- It is served via the jdpreston30 R-universe (<https://jdpreston30.r-universe.dev/TernTables>), which is a CRAN-compatible binary repository
+- The `.Rprofile` sets `options(repos = c(jdpreston30 = "https://jdpreston30.r-universe.dev", CRAN = "https://cloud.r-project.org"))` so `install.packages("TernTables")` works directly — **no `remotes` or `devtools` required**
+- renv snapshots it from r-universe automatically; `renv::restore()` reinstalls it without any special handling
+- Do **not** use `remotes::install_github()` for TernTables — that bypasses the CRAN-compatible binary and is slower
+- Do **not** add a `Remotes:` field to `DESCRIPTION` for TernTables

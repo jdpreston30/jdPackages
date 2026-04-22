@@ -3,3 +3,10 @@
 # Do not modify this file unless you know what you are doing.
 
 if (file.exists("renv/activate.R")) source("renv/activate.R")
+
+# R-universe repository — gives install.packages() access to TernTables and any
+# other jdpreston30 packages without requiring remotes or devtools.
+options(repos = c(
+  jdpreston30 = "https://jdpreston30.r-universe.dev",
+  CRAN        = "https://cloud.r-project.org"
+))
