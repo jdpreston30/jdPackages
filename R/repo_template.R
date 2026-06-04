@@ -139,22 +139,33 @@ repo_template <- function(project_name = NULL,
     on.exit(setwd(old_wd), add = TRUE)
     setwd(project_dir)
 
+    renv_initialized <- FALSE
     tryCatch({
       renv::init(project = project_dir, restart = FALSE)
       cli::cli_alert_success("renv initialized")
+      renv_initialized <- TRUE
     }, error = function(e) {
       cli::cli_alert_warning("renv::init() encountered an issue: {e$message}")
       cli::cli_alert_info("You can run renv::init() manually inside the project.")
     })
 
-    #+ 4.2: Install TernTables via r-universe (repos already set in .Rprofile)
+    #+ 4.2: Install TernTables from r-universe (always — not CRAN)
     cli::cli_alert_info("Installing TernTables from r-universe...")
     tryCatch({
-      renv::install("TernTables")
+      install.packages(
+        "TernTables",
+        repos = c(
+          "https://jdpreston30.r-universe.dev",
+          "https://cloud.r-project.org"
+        ),
+        dependencies = TRUE
+      )
       cli::cli_alert_success("TernTables installed")
     }, error = function(e) {
       cli::cli_alert_warning("Could not install TernTables: {e$message}")
-      cli::cli_alert_info("Run: renv::install(\"TernTables\") manually.")
+      cli::cli_alert_info(
+        "Run manually: install.packages(\"TernTables\", repos = \"https://jdpreston30.r-universe.dev\")"
+      )
     })
 
     #+ 4.2b: Metabolomics — install Bioconductor packages and extras
@@ -171,13 +182,17 @@ repo_template <- function(project_name = NULL,
       })
     }
 
-    #+ 4.3: Snapshot lockfile
-    tryCatch({
-      renv::snapshot(project = project_dir, prompt = FALSE)
-      cli::cli_alert_success("renv.lock snapshot created")
-    }, error = function(e) {
-      cli::cli_alert_warning("renv::snapshot() failed: {e$message}")
-    })
+    #+ 4.3: Snapshot lockfile — only if renv actually initialized
+    if (renv_initialized) {
+      tryCatch({
+        renv::snapshot(project = project_dir, prompt = FALSE)
+        cli::cli_alert_success("renv.lock snapshot created")
+      }, error = function(e) {
+        cli::cli_alert_warning("renv::snapshot() failed: {e$message}")
+      })
+    } else {
+      cli::cli_alert_info("Skipping renv snapshot — renv was not initialized.")
+    }
 
     setwd(old_wd)
   } else {
